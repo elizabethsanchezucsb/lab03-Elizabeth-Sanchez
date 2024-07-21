@@ -1,101 +1,126 @@
-// intlist.cpp
-// Implements class IntList
-// YOUR NAME(S), AND DATE
-
 #include "intlist.h"
-
 #include <iostream>
 using std::cout;
 
 // copy constructor
-IntList::IntList(const IntList& source) {
-    //IMPLEMENT THIS
+IntList::IntList(const IntList& source) : first(nullptr) {
+    if (source.first == nullptr) {
+        return; // Source list is empty
+    }
+    // Copy the first node
+    first = new Node;
+    first->info = source.first->info;
+
+    // Copy the rest of the nodes
+    Node *current = first;
+    Node *sourceNode = source.first->next;
+    while (sourceNode != nullptr) {
+        current->next = new Node;
+        current = current->next;
+        current->info = sourceNode->info;
+        sourceNode = sourceNode->next;
+    }
+    current->next = nullptr; // End the list
 }
 
 // destructor deletes all nodes
 IntList::~IntList() {
-    //IMPLEMENT THIS
+    while (first != nullptr) {
+        Node *temp = first;
+        first = first->next;
+        delete temp;
+    }
 }
-
 
 // return sum of values in list
 int IntList::sum() const {
-    return 0; // REPLACE THIS NON-SOLUTION
+    int total = 0;
+    Node *current = first;
+    while (current != nullptr) {
+        total += current->info;
+        current = current->next;
+    }
+    return total;
 }
 
 // returns true if value is in the list; false if not
 bool IntList::contains(int value) const {
-    return false; // REPLACE THIS NON-SOLUTION
+    Node *current = first;
+    while (current != nullptr) {
+        if (current->info == value) {
+            return true;
+        }
+        current = current->next;
+    }
+    return false;
 }
 
 // returns maximum value in list, or 0 if empty list
 int IntList::max() const {
-    return 0; // REPLACE THIS NON-SOLUTION
+    if (first == nullptr) {
+        return 0; // Empty list
+    }
+    int maxValue = first->info;
+    Node *current = first->next;
+    while (current != nullptr) {
+        if (current->info > maxValue) {
+            maxValue = current->info;
+        }
+        current = current->next;
+    }
+    return maxValue;
 }
 
-// returns average (arithmetic mean) of all values, or
-// 0 if list is empty
+// returns average (arithmetic mean) of all values, or 0 if list is empty
 double IntList::average() const {
-    return 0.0; // REPLACE THIS NON-SOLUTION
+    if (first == nullptr) {
+        return 0.0; // Empty list
+    }
+    int total = sum();
+    int count = this->count();
+    return static_cast<double>(total) / count;
 }
 
 // inserts value as new node at beginning of list
 void IntList::insertFirst(int value) {
-    // IMPLEMENT
+    Node *newNode = new Node;
+    newNode->info = value;
+    newNode->next = first;
+    first = newNode;
 }
 
-//Assignment operator should copy the list from the source
-//to this list, deleting/replacing any existing nodes
-IntList& IntList::operator=(const IntList& source){
-    //IMPLEMENT
-    return *this;
-}
+// assignment operator
+IntList& IntList::operator=(const IntList& source) {
+    if (this == &source) {
+        return *this; // Self-assignment, do nothing
+    }
 
+    // Delete the current list
+    while (first != nullptr) {
+        Node *temp = first;
+        first = first->next;
+        delete temp;
+    }
 
-
-// DO NOT CHANGE ANYTHING BELOW (READ IT THOUGH)
-
-// constructor sets up empty list
-IntList::IntList() : first(0) { }
-
-
-// append value at end of list
-void IntList::append(int value) {
-    if (first == 0) { // empty list
+    // Copy the source list
+    if (source.first == nullptr) {
+        first = nullptr; // Source list is empty
+    } else {
+        // Copy the first node
         first = new Node;
-        first->info = value;
-        first->next = 0;
-    }
-    else {
-        Node *n = first;
-        while (n->next) // not last node yet
-            n = n->next;
-        n->next = new Node;
-        n->next->info = value;
-        n->next->next = 0;
-    }
-}
+        first->info = source.first->info;
 
-// print values enclose in [], separated by spaces
-void IntList::print() const {
-    Node *n = first;
-    cout << '[';
-    while (n) {
-        cout << n->info;
-        if (n->next)
-            cout << " ";
-        n = n->next;
+        // Copy the rest of the nodes
+        Node *current = first;
+        Node *sourceNode = source.first->next;
+        while (sourceNode != nullptr) {
+            current->next = new Node;
+            current = current->next;
+            current->info = sourceNode->info;
+            sourceNode = sourceNode->next;
+        }
+        current->next = nullptr; // End the list
     }
-    cout << ']';
-}
 
-// return count of values
-int IntList::count() const {
-    int result = 0;
-    Node *n = first;
-    while (n) {
-        ++result;
-        n = n->next;
-    }
-    return result;
+    return *this;
 }
